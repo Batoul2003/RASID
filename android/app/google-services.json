@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "258194497859",
+    "firebase_url": "https://pv-monitoring-system-d1ade-default-rtdb.firebaseio.com",
+    "project_id": "pv-monitoring-system-d1ade",
+    "storage_bucket": "pv-monitoring-system-d1ade.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258194497859:android:a111aaedefaf6790a14ff6",
+        "android_client_info": {
+          "package_name": "com.example.pv_monitoring_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI_o5Rd6XpcaWS8haMlzfurE9v8eLcAUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
