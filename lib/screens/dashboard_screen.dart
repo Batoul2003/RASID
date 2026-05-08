@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Enhancement: Added Firebase Auth
 import 'package:flutter/material.dart';
 
+import '../services/notification_service.dart';
 import 'alerts_screen.dart';
 import 'details_screen.dart';
 import 'history_screen.dart'; // Enhancement: Added history screen tab
@@ -43,6 +44,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     "last_updated": "--"
   };
 
+  String _lastNotifiedTimestamp = "";
+
   @override
   void initState() {
     super.initState();
@@ -51,8 +54,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final data = event.snapshot.value;
 
       if (data != null && data is Map) {
+        final newPvData = Map<String, dynamic>.from(data);
+        
+        // Check for new severe alerts
+        final severityStr = newPvData["severity"]?.toString().toLowerCase() ?? "";
+        final isSevere = severityStr == 'high' || severityStr == 'critical' || severityStr == 'fault';
+        final updateTime = newPvData["last_updated"]?.toString() ?? "";
+        
+        if (isSevere && updateTime != _lastNotifiedTimestamp) {
+          _lastNotifiedTimestamp = updateTime;
+          NotificationService().showLocalNotification(
+            title: "System Alert: ${newPvData["fault_type"] ?? "Unknown"}",
+            body: newPvData["recent_alert"]?.toString() ?? "A new severe alert was detected.",
+          );
+        }
+
         setState(() {
-          pvData = Map<String, dynamic>.from(data);
+          pvData = newPvData;
         });
       }
     });
