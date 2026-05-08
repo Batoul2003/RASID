@@ -7,32 +7,14 @@ class AlertsScreen extends StatelessWidget {
   final String recentAlert;
   final String faultType;
   final String faultLocation;
-  final String severity;
 
   const AlertsScreen({
     super.key,
     required this.recentAlert,
     required this.faultType,
     required this.faultLocation,
-    required this.severity,
   });
 
-  // Enhancement: Semantic color coding for severity
-  Color _getSeverityColor(String sev) {
-    switch (sev.toLowerCase()) {
-      case 'low':
-        return AppColors.severityGreen;
-      case 'medium':
-      case 'warning':
-        return AppColors.severityAmber;
-      case 'high':
-      case 'critical':
-      case 'fault':
-        return AppColors.severityRed;
-      default:
-        return Colors.grey;
-    }
-  }
 
   // Enhancement: Clear alert action
   void _clearAlert() {
@@ -40,7 +22,6 @@ class AlertsScreen extends StatelessWidget {
       "recent_alert": "No alerts yet.",
       "fault_type": "--",
       "fault_location": "--",
-      "severity": "--",
     });
   }
 
@@ -73,64 +54,6 @@ class AlertsScreen extends StatelessWidget {
                 children: [
                   Text("Fault Type: $faultType"),
                   Text("Location: $faultLocation"),
-                  Row(
-                    children: [
-                      const Text("Severity: "),
-                      // Enhancement: Severity color coded badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getSeverityColor(severity),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          severity,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.alertDarkRed, AppColors.alertRed],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Fault Alerts',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Recent System Warning',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'This page shows the latest detected alert from the PV monitoring system.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
                 ],
               ),
             ),

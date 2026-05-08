@@ -50,6 +50,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'pv-monitoring-system-d1ade.firebasestorage.app',
     measurementId: 'G-DV5PBRPL3F',
   );
+  
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDI_o5Rd6XpcaWS8haMlzfurE9v8eLcAUo',

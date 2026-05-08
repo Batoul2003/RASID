@@ -29,7 +29,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     "system_status": "Loading...",
     "voltage": "--",
     "current": "--",
-    "temperature": "--",
+    "ambient_temp": "--",
+    "string1_temp": "--",
+    "string2_temp": "--",
     "irradiance": "--",
     "string1_voltage": "--",
     "string1_current": "--",
@@ -39,9 +41,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     "ac_current": "--",
     "recent_alert": "No alerts yet.",
     "fault_type": "--",
-    "fault_location": "--",
-    "severity": "--",
-    "last_updated": "--"
+    "fault_location": "--"
   };
 
   String _lastNotifiedTimestamp = "";
@@ -56,16 +56,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (data != null && data is Map) {
         final newPvData = Map<String, dynamic>.from(data);
         
-        // Check for new severe alerts
-        final severityStr = newPvData["severity"]?.toString().toLowerCase() ?? "";
-        final isSevere = severityStr == 'high' || severityStr == 'critical' || severityStr == 'fault';
-        final updateTime = newPvData["last_updated"]?.toString() ?? "";
-        
-        if (isSevere && updateTime != _lastNotifiedTimestamp) {
+        // Check for new alerts
+        final updateTime = newPvData["recent_alert"]?.toString() ?? "";
+        final hasNewAlert = updateTime.isNotEmpty && updateTime != "No alerts yet." && updateTime != _lastNotifiedTimestamp;
+
+        if (hasNewAlert) {
           _lastNotifiedTimestamp = updateTime;
           NotificationService().showLocalNotification(
             title: "System Alert: ${newPvData["fault_type"] ?? "Unknown"}",
-            body: newPvData["recent_alert"]?.toString() ?? "A new severe alert was detected.",
+            body: updateTime,
           );
         }
 
@@ -216,13 +215,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     "Location: ${pvData["fault_location"]}",
                     style: const TextStyle(fontSize: 15),
                   ),
-                  Text(
-                    "Severity: ${pvData["severity"]}",
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   const SizedBox(height: 6),
                   
                 ],
@@ -243,13 +235,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               children: [
                 StatusCard(
-                  title: 'Voltage',
+                  title: 'Total Voltage',
                   value: '${pvData["voltage"]} V',
                   icon: Icons.flash_on,
                   color: Colors.orange,
                 ),
                 StatusCard(
-                  title: 'Current',
+                  title: 'Total Current',
                   value: '${pvData["current"]} A',
                   icon: Icons.electric_bolt,
                   color: Colors.blue,
@@ -259,8 +251,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               children: [
                 StatusCard(
-                  title: 'Temp',
-                  value: '${pvData["temperature"]} °C',
+                  title: 'Ambient Temp',
+                  value: '${pvData["ambient_temp"]} °C',
                   icon: Icons.thermostat,
                   color: Colors.red,
                 ),
@@ -295,6 +287,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               icon: Icons.bolt,
             ),
             SensorTile(
+              label: 'String 1 Temperature',
+              value: '${pvData["string1_temp"]} °C',
+              icon: Icons.thermostat,
+            ),
+            SensorTile(
               label: 'String 2 Voltage',
               value: '${pvData["string2_voltage"]} V',
               icon: Icons.show_chart,
@@ -304,6 +301,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
               value: '${pvData["string2_current"]} A',
               icon: Icons.bolt,
             ),
+            SensorTile(
+              label: 'String 2 Temperature',
+              value: '${pvData["string2_temp"]} °C',
+              icon: Icons.thermostat,
+            ),
+            // ATTENTION: FOR TESTING ONLY
+            //ElevatedButton(
+              //  onPressed: () async {
+                //  await NotificationService().showLocalNotification(
+                //  title: 'Test Alert',
+                //  body: 'PV fault notification is working!',
+                //);
+              //},
+              //child: const Text('Test Notification'),
+            //),
 
             const SizedBox(height: 20),
             const Text(
@@ -420,10 +432,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final systemStatus = pvData["system_status"].toString();
-    final severityStr = pvData["severity"]?.toString().toLowerCase() ?? "";
-
-    // Enhancement: Notification condition for Alerts tab
-    final bool hasAlert = severityStr == 'high' || severityStr == 'critical' || severityStr == 'fault';
+    final recentAlert = pvData["recent_alert"]?.toString() ?? "";
+    final bool hasAlert = recentAlert.isNotEmpty && recentAlert != "No alerts yet.";
 
     final List<Widget> screens = [
       _buildDashboardContent(systemStatus),
@@ -431,7 +441,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         recentAlert: pvData["recent_alert"].toString(),
         faultType: pvData["fault_type"].toString(),
         faultLocation: pvData["fault_location"].toString(),
-        severity: pvData["severity"].toString(),
       ),
       DetailsScreen(
         pvData: pvData,
