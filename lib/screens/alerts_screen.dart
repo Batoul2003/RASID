@@ -142,13 +142,6 @@ class AlertsScreen extends StatelessWidget {
                   'Zero or unstable current values may indicate string disconnection or poor wiring contact.',
               highlight: fTypeLower.contains("open") || fTypeLower.contains("disconnect"),
             ),
-            _buildInfoCard(
-              icon: Icons.power_off,
-              title: 'Inverter Issue',
-              description:
-                  'Abnormal AC voltage or AC current can indicate inverter-side fault or output instability.',
-              highlight: fTypeLower.contains("inverter"),
-            ),
 
             const SizedBox(height: 24),
             // Enhancement: Clear Alert Button
