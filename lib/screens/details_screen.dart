@@ -16,6 +16,13 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   int _selectedTab = 0; // 0 for Live Performance, 1 for Technical Specs
 
+  /// Formats a raw sensor value to 2 decimal places.
+  /// Returns the original string unchanged if it is not a valid number.
+  String _fmt(dynamic raw) {
+    final d = double.tryParse(raw.toString());
+    return d != null ? d.toStringAsFixed(2) : raw.toString();
+  }
+
   Widget buildDetailTile(String label, String value) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -155,6 +162,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double s1v = double.tryParse(widget.pvData["string1_voltage"].toString()) ?? 0.0;
+    double s1i = double.tryParse(widget.pvData["string1_current"].toString()) ?? 0.0;
+    double s2v = double.tryParse(widget.pvData["string2_voltage"].toString()) ?? 0.0;
+    double s2i = double.tryParse(widget.pvData["string2_current"].toString()) ?? 0.0;
+
+    double dcPower = double.tryParse(widget.pvData["dc_power"].toString()) ?? 0.0;
+    if (dcPower == 0.0) {
+      dcPower = (s1v * s1i) + (s2v * s2i);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -281,18 +298,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
               ),
               const SizedBox(height: 12),
               buildDetailTile('System Status', widget.pvData["system_status"].toString()),
-              buildDetailTile('Voltage', '${widget.pvData["voltage"]} V'),
-              buildDetailTile('Current', '${widget.pvData["current"]} A'),
-              buildDetailTile('Ambient Temp', '${widget.pvData["ambient_temp"]} °C'),
-              buildDetailTile('String 1 Temp', '${widget.pvData["string1_temp"]} °C'),
-              buildDetailTile('String 2 Temp', '${widget.pvData["string2_temp"]} °C'),
-              buildDetailTile('Irradiance', '${widget.pvData["irradiance"]} W/m²'),
-              buildDetailTile('String 1 Voltage', '${widget.pvData["string1_voltage"]} V'),
-              buildDetailTile('String 1 Current', '${widget.pvData["string1_current"]} A'),
-              buildDetailTile('String 2 Voltage', '${widget.pvData["string2_voltage"]} V'),
-              buildDetailTile('String 2 Current', '${widget.pvData["string2_current"]} A'),
-              buildDetailTile('AC Voltage', '${widget.pvData["ac_voltage"]} V'),
-              buildDetailTile('AC Current', '${widget.pvData["ac_current"]} A'),
+              buildDetailTile('Total DC Power', '${dcPower.toStringAsFixed(2)} W'),
+              buildDetailTile('Voltage', '${_fmt(widget.pvData["voltage"])} V'),
+              buildDetailTile('Current', '${_fmt(widget.pvData["current"])} A'),
+              buildDetailTile('Ambient Temp', '${_fmt(widget.pvData["ambient_temp"])} °C'),
+              buildDetailTile('String 1 Temp', '${_fmt(widget.pvData["string1_temp"])} °C'),
+              buildDetailTile('String 2 Temp', '${_fmt(widget.pvData["string2_temp"])} °C'),
+              buildDetailTile('Irradiance', '${_fmt(widget.pvData["irradiance"])} W/m²'),
+              buildDetailTile('String 1 Voltage', '${_fmt(widget.pvData["string1_voltage"])} V'),
+              buildDetailTile('String 1 Current', '${_fmt(widget.pvData["string1_current"])} A'),
+              buildDetailTile('String 2 Voltage', '${_fmt(widget.pvData["string2_voltage"])} V'),
+              buildDetailTile('String 2 Current', '${_fmt(widget.pvData["string2_current"])} A'),
             ] else ...[
               const Text(
                 'Panel Specifications',

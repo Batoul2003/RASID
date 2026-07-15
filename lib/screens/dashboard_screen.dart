@@ -67,6 +67,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: "System Alert: ${newPvData["fault_type"] ?? "Unknown"}",
             body: updateTime,
           );
+
+          // Save alert to /pv_alerts history so the History Screen can display it
+          final int ts = newPvData["timestamp"] is int
+              ? newPvData["timestamp"] as int
+              : DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          FirebaseDatabase.instance.ref().child('pv_alerts/$ts').set({
+            "fault_type":     newPvData["fault_type"]    ?? "--",
+            "fault_location": newPvData["fault_location"] ?? "--",
+            "recent_alert":   updateTime,
+            "timestamp":      ts,
+          });
         }
 
         setState(() {
@@ -87,6 +98,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (s.contains('fault')) return AppColors.alertRed;
     if (s.contains('warning')) return AppColors.amber;
     return AppColors.severityGreen;
+  }
+
+  /// Formats a raw sensor value to 2 decimal places.
+  /// Returns the original string unchanged if it is not a valid number.
+  String _fmt(dynamic raw) {
+    final d = double.tryParse(raw.toString());
+    return d != null ? d.toStringAsFixed(2) : raw.toString();
   }
 
   // Enhancement: Added logout logic
@@ -230,13 +248,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 StatusCard(
                   title: 'Total Voltage',
-                  value: '${pvData["voltage"]} V',
+                  value: '${_fmt(pvData["voltage"])} V',
                   icon: Icons.flash_on,
                   color: Colors.orange,
                 ),
                 StatusCard(
                   title: 'Total Current',
-                  value: '${pvData["current"]} A',
+                  value: '${_fmt(pvData["current"])} A',
                   icon: Icons.electric_bolt,
                   color: Colors.blue,
                 ),
@@ -246,13 +264,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 StatusCard(
                   title: 'Ambient Temp',
-                  value: '${pvData["ambient_temp"]} °C',
+                  value: '${_fmt(pvData["ambient_temp"])} °C',
                   icon: Icons.thermostat,
                   color: Colors.red,
                 ),
                 StatusCard(
                   title: 'Irradiance',
-                  value: '${pvData["irradiance"]} W/m²',
+                  value: '${_fmt(pvData["irradiance"])} W/m²',
                   icon: Icons.wb_sunny,
                   color: AppColors.amber,
                 ),
@@ -272,32 +290,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             SensorTile(
               label: 'String 1 Voltage',
-              value: '${pvData["string1_voltage"]} V',
+              value: '${_fmt(pvData["string1_voltage"])} V',
               icon: Icons.show_chart,
             ),
             SensorTile(
               label: 'String 1 Current',
-              value: '${pvData["string1_current"]} A',
+              value: '${_fmt(pvData["string1_current"])} A',
               icon: Icons.bolt,
             ),
             SensorTile(
               label: 'String 1 Temperature',
-              value: '${pvData["string1_temp"]} °C',
+              value: '${_fmt(pvData["string1_temp"])} °C',
               icon: Icons.thermostat,
             ),
             SensorTile(
               label: 'String 2 Voltage',
-              value: '${pvData["string2_voltage"]} V',
+              value: '${_fmt(pvData["string2_voltage"])} V',
               icon: Icons.show_chart,
             ),
             SensorTile(
               label: 'String 2 Current',
-              value: '${pvData["string2_current"]} A',
+              value: '${_fmt(pvData["string2_current"])} A',
               icon: Icons.bolt,
             ),
             SensorTile(
               label: 'String 2 Temperature',
-              value: '${pvData["string2_temp"]} °C',
+              value: '${_fmt(pvData["string2_temp"])} °C',
               icon: Icons.thermostat,
             ),
             // ATTENTION: FOR TESTING ONLY
@@ -323,7 +341,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 10),
             SensorTile(
               label: 'DC Power (Total)',
-              value: '${dcPower.toStringAsFixed(1)} W',
+              value: '${dcPower.toStringAsFixed(2)} W',
               icon: Icons.solar_power,
             ),
 
