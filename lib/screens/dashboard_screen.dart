@@ -42,7 +42,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     "fault_type": "--",
     "fault_location": "--",
     "recent_alert": "No alerts yet.",
-    "alert_timestamp": "--"
+    "alert_timestamp": "--",
+    "mppt_battery_voltage": "--",
+    "mppt_panel_voltage": "--",
+    "mppt_panel_power": "--",
+    "mppt_pv_current": "--",
+    "mppt_charger_state": "--",
+    "mppt_charger_state_name": "--",
+    "mppt_error_code": "--"
   };
 
   String _lastNotifiedTimestamp = "";
@@ -97,7 +104,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final s = status.toLowerCase();
     if (s.contains('fault')) return AppColors.alertRed;
     if (s.contains('warning')) return AppColors.amber;
-    return AppColors.severityGreen;
+    if (s.contains('normal')) return AppColors.severityGreen;
+    return Colors.grey; // Unknown / loading state
   }
 
   /// Formats a raw sensor value to 2 decimal places.
@@ -289,7 +297,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 10),
 
             SensorTile(
-              label: 'String 1 Voltage',
+              label: 'System Voltage',
               value: '${_fmt(pvData["string1_voltage"])} V',
               icon: Icons.show_chart,
             ),
@@ -304,7 +312,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               icon: Icons.thermostat,
             ),
             SensorTile(
-              label: 'String 2 Voltage',
+              label: 'Battery Voltage',
               value: '${_fmt(pvData["string2_voltage"])} V',
               icon: Icons.show_chart,
             ),
@@ -318,16 +326,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
               value: '${_fmt(pvData["string2_temp"])} °C',
               icon: Icons.thermostat,
             ),
-            // ATTENTION: FOR TESTING ONLY
-            //ElevatedButton(
-              //  onPressed: () async {
-                //  await NotificationService().showLocalNotification(
-                //  title: 'Test Alert',
-                //  body: 'PV fault notification is working!',
-                //);
-              //},
-              //child: const Text('Test Notification'),
-            //),
+
+            const SizedBox(height: 20),
+            const Text(
+              'Victron MPPT Readings',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.navyDark,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SensorTile(
+              label: 'MPPT Battery Voltage',
+              value: '${_fmt(pvData["mppt_battery_voltage"])} V',
+              icon: Icons.battery_charging_full,
+            ),
+            SensorTile(
+              label: 'MPPT Panel Voltage',
+              value: '${_fmt(pvData["mppt_panel_voltage"])} V',
+              icon: Icons.solar_power_outlined,
+            ),
+            SensorTile(
+              label: 'MPPT Panel Power',
+              value: '${pvData["mppt_panel_power"] ?? "--"} W',
+              icon: Icons.power,
+            ),
+            SensorTile(
+              label: 'MPPT PV Current',
+              value: '${_fmt(pvData["mppt_pv_current"])} A',
+              icon: Icons.electric_meter,
+            ),
+            SensorTile(
+              label: 'MPPT Charger State',
+              value: '${pvData["mppt_charger_state_name"] ?? "--"} (${pvData["mppt_charger_state"] ?? "--"})',
+              icon: Icons.settings_input_component,
+            ),
+            SensorTile(
+              label: 'MPPT Error Code',
+              value: '${pvData["mppt_error_code"] ?? "--"}',
+              icon: Icons.error_outline,
+            ),
 
             const SizedBox(height: 20),
             const Text(

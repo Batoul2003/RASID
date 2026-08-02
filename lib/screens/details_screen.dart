@@ -307,8 +307,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
               buildDetailTile('Irradiance', '${_fmt(widget.pvData["irradiance"])} W/m²'),
               buildDetailTile('String 1 Voltage', '${_fmt(widget.pvData["string1_voltage"])} V'),
               buildDetailTile('String 1 Current', '${_fmt(widget.pvData["string1_current"])} A'),
-              buildDetailTile('String 2 Voltage', '${_fmt(widget.pvData["string2_voltage"])} V'),
+              buildDetailTile('Battery Voltage', '${_fmt(widget.pvData["string2_voltage"])} V'),
               buildDetailTile('String 2 Current', '${_fmt(widget.pvData["string2_current"])} A'),
+              buildDetailTile('MPPT Battery Voltage', '${_fmt(widget.pvData["mppt_battery_voltage"])} V'),
+              buildDetailTile('MPPT Panel Voltage', '${_fmt(widget.pvData["mppt_panel_voltage"])} V'),
+              buildDetailTile('MPPT Panel Power', '${widget.pvData["mppt_panel_power"] ?? "--"} W'),
+              buildDetailTile('MPPT PV Current', '${_fmt(widget.pvData["mppt_pv_current"])} A'),
+              buildDetailTile('MPPT Charger State', '${widget.pvData["mppt_charger_state_name"] ?? "--"} (${widget.pvData["mppt_charger_state"] ?? "--"})'),
+              buildDetailTile('MPPT Error Code', '${widget.pvData["mppt_error_code"] ?? "--"}'),
             ] else ...[
               const Text(
                 'Panel Specifications',
