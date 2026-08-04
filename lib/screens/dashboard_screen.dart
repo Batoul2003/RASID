@@ -287,6 +287,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 20),
             const Text(
+              'Recent Alert',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.navyDark,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            AlertBox(
+              alertText: pvData["recent_alert"].toString(),
+            ),
+
+            const SizedBox(height: 20),
+            const Text(
+              'Power Output',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.navyDark,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SensorTile(
+              label: 'DC Power (Total)',
+              value: '${dcPower.toStringAsFixed(2)} W',
+              icon: Icons.solar_power,
+            ),
+
+            const SizedBox(height: 20),
+            const Text(
               'String-Level Monitoring',
               style: TextStyle(
                 fontSize: 20,
@@ -366,37 +397,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               label: 'MPPT Error Code',
               value: '${pvData["mppt_error_code"] ?? "--"}',
               icon: Icons.error_outline,
-            ),
-
-            const SizedBox(height: 20),
-            const Text(
-              'Power Output',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.navyDark,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SensorTile(
-              label: 'DC Power (Total)',
-              value: '${dcPower.toStringAsFixed(2)} W',
-              icon: Icons.solar_power,
-            ),
-
-            const SizedBox(height: 20),
-            const Text(
-              'Recent Alert',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.navyDark,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            AlertBox(
-              alertText: pvData["recent_alert"].toString(),
             ),
           ],
         ),

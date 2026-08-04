@@ -81,12 +81,42 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
 
 
+  String _formatTimestamp(String timestampRaw) {
+    if (timestampRaw.isEmpty) return '';
+    final intVal = int.tryParse(timestampRaw);
+    DateTime? dateTime;
+    if (intVal != null) {
+      if (timestampRaw.length == 10) {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(intVal * 1000).toLocal();
+      } else if (timestampRaw.length >= 13) {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(intVal).toLocal();
+      } else {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(intVal * 1000).toLocal();
+      }
+    } else {
+      dateTime = DateTime.tryParse(timestampRaw)?.toLocal();
+    }
+
+    if (dateTime == null) {
+      return timestampRaw;
+    }
+
+    final year = dateTime.year;
+    final month = dateTime.month.toString().padLeft(2, '0');
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+
+    return '$year-$month-$day $hour:$minute';
+  }
+
   // ── Single Alert Tile ─────────────────────────────────────────────────────────
   Widget _buildAlertTile(Map<String, dynamic> alert) {
     final String faultType = alert['fault_type']?.toString() ?? '--';
     final String location = alert['fault_location']?.toString() ?? '--';
     final String message = alert['recent_alert']?.toString() ?? '--';
-    final String timestamp = alert['timestamp']?.toString() ?? '';
+    final String timestampRaw = alert['timestamp']?.toString() ?? '';
+    final String formattedTimestamp = _formatTimestamp(timestampRaw);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -140,7 +170,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   style: const TextStyle(
                       fontSize: 13, color: Colors.black87, height: 1.4),
                 ),
-                if (timestamp.isNotEmpty) ...[
+                if (formattedTimestamp.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -149,7 +179,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          timestamp,
+                          formattedTimestamp,
                           style: const TextStyle(
                               fontSize: 11, color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
